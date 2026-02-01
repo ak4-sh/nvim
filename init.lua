@@ -1,4 +1,4 @@
--- Leader
+-- Text appearance Leader
 _G.fn = require("utils.fn")
 vim.g.mapleader = " "
 
@@ -13,8 +13,9 @@ vim.opt.expandtab = true
 vim.opt.smartindent = true
 
 -- Wrapping
-vim.opt.wrap = false
+vim.opt.wrap = true
 vim.opt.linebreak = true
+vim.opt.textwidth=80
 
 -- Search
 vim.opt.ignorecase = true
@@ -327,6 +328,7 @@ vim.lsp.config["gopls"] = {
 
 vim.lsp.enable('lua_ls')
 vim.lsp.enable('gopls')
+vim.lsp.enable("vtsls")
 
 require ("fzf-lua").setup({
     keymap = {
@@ -350,4 +352,8 @@ end
 
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
 
+local harpoon = require("harpoon")
+harpoon:setup()
 
+vim.keymap.set("n", "<leader>a", function() harpoon:list():add() end)
+vim.keymap.set("n", "<C-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
