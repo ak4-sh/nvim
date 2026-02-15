@@ -3,7 +3,7 @@ return {
     config = function()
         require'nvim-treesitter'.install{
             "rust", "javascript", "zig", "python", "java", "c", "cpp", "bash", "zsh",
-            "markdown", "yaml", "latex"
+            "markdown", "yaml", "latex", "go"
         }
     end
 }

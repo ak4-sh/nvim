@@ -219,7 +219,7 @@ require("oil").setup({
   -- Configuration for the floating window in oil.open_float
   float = {
     -- Padding around the floating window
-    padding = 2,
+    padding = 1,
     -- max_width and max_height can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
     max_width = 0,
     max_height = 0,
@@ -326,9 +326,22 @@ vim.lsp.config["gopls"] = {
   end,
 }
 
+
+vim.lsp.config["rahu"] = {
+    cmd = { "/Users/akash/Developer/rahu/rahu-lsp" },
+    filetypes = { "python" },
+    root_dir = vim.fn.getcwd(),
+    autostart=true,
+}
+
+vim.lsp.enable("rahu")
+vim.lsp.enable("texlab")
+
 vim.lsp.enable('lua_ls')
 vim.lsp.enable('gopls')
-vim.lsp.enable("vtsls")
+vim.lsp.enable('vtsls')
+vim.lsp.enable('gleam')
+vim.lsp.enable('ocamllsp')
 
 require ("fzf-lua").setup({
     keymap = {
@@ -342,7 +355,7 @@ vim.api.nvim_set_keymap('n', '<leader>ff', ':FzfLua files<CR>', { noremap = true
 vim.api.nvim_set_keymap('n', '<leader>lg', ':FzfLua live_grep_native<CR>', { noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<leader>/', ':FzfLua lgrep_curbuf<CR>', {noremap = true, silent = true})
 
-
+vim.keymap.set("n", "<leader>SS", vim.lsp.buf.rename, { silent = true })
 vim.keymap.set('n', '<leader>d', vim.lsp.buf.definition)
 vim.keymap.set('n', '<leader>u', function()
     require('fzf-lua').lsp_references({includeDeclaration = false})

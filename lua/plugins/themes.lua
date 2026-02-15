@@ -7,5 +7,14 @@ return {
     },
     {
       "oskarnurm/koda.nvim",
-    }
+    },
+    {
+        "catppuccin/nvim",
+        name="catppuccin",
+        priority=1000
+    },
+    {
+        "Shatur/neovim-ayu",
+        name="ayu",
+    },
 }
