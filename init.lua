@@ -258,7 +258,7 @@ require("oil").setup({
     max_width = 0.9,
     -- min_width = {40, 0.4} means "the greater of 40 columns or 40% of total"
     min_width = { 40, 0.4 },
-    -- optionally define an integer/float for the exact width of the preview window
+    -- optionally define an integer/float for the exact width of the preview windowssssss
     width = nil,
     -- Height dimensions can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
     -- min_height and max_height can be a single value or a list of mixed integer/float types.
