@@ -362,6 +362,7 @@ vim.keymap.set('n', '<leader>u', function()
 end
 )
 
+-- testing the signing
 
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
 
