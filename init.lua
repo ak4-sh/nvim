@@ -327,15 +327,16 @@ vim.lsp.config["gopls"] = {
 }
 
 
-vim.lsp.config["rahu"] = {
-    cmd = { "/Users/akash/Developer/rahu/rahu-lsp" },
-    filetypes = { "python" },
-    root_dir = vim.fn.getcwd(),
-    autostart=true,
-}
-
-vim.lsp.enable("rahu")
+-- vim.lsp.config["rahu"] = {
+--     cmd = {"/Users/akash/Developer/rahu/bin/rahu-lsp"},
+--     filetypes = { "python" },
+--     root_dir = vim.fn.getcwd(),
+--     autostart=true,
+-- }
+--
+-- vim.lsp.enable("rahu")
 vim.lsp.enable("texlab")
+vim.lsp.enable('pyrefly')
 
 vim.lsp.enable('lua_ls')
 vim.lsp.enable('gopls')
@@ -370,3 +371,18 @@ harpoon:setup()
 
 vim.keymap.set("n", "<leader>a", function() harpoon:list():add() end)
 vim.keymap.set("n", "<C-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
+
+
+vim.keymap.set("n", "<leader>t", function()
+  vim.cmd("split | terminal go test ./...")
+end)
+
+
+vim.api.nvim_create_autocmd('LspNotify', {
+  callback = function(args)
+    if args.data.method == 'textDocument/didOpen' then
+      vim.lsp.foldclose('imports', vim.fn.bufwinid(args.buf))
+    end
+  end,
+})
+
