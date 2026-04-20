@@ -94,7 +94,8 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 
 require("config.lazy")
 
-vim.cmd("colorscheme rose-pine")
+
+vim.cmd("colorscheme aura-dark")
 require("oil").setup({
   default_file_explorer = true,
   -- Id is automatically added at the beginning, and name at the end
@@ -334,15 +335,21 @@ vim.lsp.config["gopls"] = {
 --     autostart=true,
 -- }
 --
+--
 -- vim.lsp.enable("rahu")
-vim.lsp.enable("texlab")
+
 vim.lsp.enable('pyrefly')
+vim.lsp.enable("texlab")
+vim.lsp.enable('marksman')
 
 vim.lsp.enable('lua_ls')
 vim.lsp.enable('gopls')
 vim.lsp.enable('vtsls')
 vim.lsp.enable('gleam')
 vim.lsp.enable('ocamllsp')
+vim.lsp.enable("clangd")
+vim.lsp.enable('zls')
+vim.lsp.enable('rust_analyzer')
 
 require ("fzf-lua").setup({
     keymap = {
