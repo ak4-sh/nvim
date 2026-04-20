@@ -92,10 +92,9 @@ vim.api.nvim_create_autocmd("TextYankPost", {
   end,
 })
 
-require("config.lazy")
+require("config.pack")
 
 
-vim.cmd("colorscheme aura-dark")
 require("oil").setup({
   default_file_explorer = true,
   -- Id is automatically added at the beginning, and name at the end
@@ -372,13 +371,6 @@ end
 
 
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float)
-
-local harpoon = require("harpoon")
-harpoon:setup()
-
-vim.keymap.set("n", "<leader>a", function() harpoon:list():add() end)
-vim.keymap.set("n", "<C-e>", function() harpoon.ui:toggle_quick_menu(harpoon:list()) end)
-
 
 vim.keymap.set("n", "<leader>t", function()
   vim.cmd("split | terminal go test ./...")
