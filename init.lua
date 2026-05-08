@@ -73,6 +73,20 @@ vim.opt.iskeyword:append("-")
 -- Shorter messages
 vim.opt.shortmess:append("c")
 
+-- Folding (treesitter-based with LSP fallback)
+vim.opt.foldenable = true
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+vim.opt.foldtext = "v:lua.vim.treesitter.foldtext()"
+vim.opt.foldlevel = 99
+vim.opt.foldlevelstart = 99
+vim.opt.foldcolumn = "auto"
+
+-- Fold keymaps
+vim.keymap.set("n", "<leader>z", "za", { desc = "Toggle fold" })
+vim.keymap.set("n", "<leader>zo", "zR", { desc = "Open all folds" })
+vim.keymap.set("n", "<leader>zc", "zM", { desc = "Close all folds" })
+
 -- Filetype detection
 vim.cmd("filetype plugin indent on")
 
@@ -84,6 +98,9 @@ vim.keymap.set("i", "jk", "<Esc>")
 -- Visual mode indentation
 vim.keymap.set("v", "<", "<gv")
 vim.keymap.set("v", ">", ">gv")
+
+-- Lazygit
+vim.keymap.set("n", "<leader>gg", "<cmd>LazyGit<cr>", { desc = "Open lazygit" })
 
 -- Highlight on yank
 vim.api.nvim_create_autocmd("TextYankPost", {
@@ -114,7 +131,7 @@ require("oil").setup({
     wrap = false,
     signcolumn = "no",
     cursorcolumn = false,
-    foldcolumn = "0",
+    foldcolumn = "auto",
     spell = false,
     list = false,
     conceallevel = 3,
@@ -301,6 +318,18 @@ vim.keymap.set("n", "<leader>pf", function()
   require("oil").open_float()
 end, { desc = "Oil (float)" })
 
+-- Helper function for LSP folding setup
+local function setup_lsp_folding(client, bufnr)
+  if client.server_capabilities.foldingRangeProvider then
+    local winid = vim.fn.bufwinid(bufnr)
+    if winid ~= -1 then
+      vim.api.nvim_set_option_value("foldmethod", "expr", { win = winid })
+      vim.api.nvim_set_option_value("foldexpr", "v:lua.vim.lsp.foldexpr()", { win = winid })
+      vim.api.nvim_set_option_value("foldtext", "v:lua.vim.lsp.foldtext()", { win = winid })
+    end
+  end
+end
+
 vim.lsp.config["gopls"] = {
   settings = {
     gopls = {
@@ -312,6 +341,10 @@ vim.lsp.config["gopls"] = {
     },
   },
   on_attach = function(client, bufnr)
+    -- Setup LSP folding
+    setup_lsp_folding(client, bufnr)
+
+    -- Format on save
     if client.server_capabilities.documentFormattingProvider then
       vim.api.nvim_create_autocmd("BufWritePre", {
         buffer = bufnr,
@@ -333,9 +366,56 @@ vim.lsp.config["gopls"] = {
 --     root_dir = vim.fn.getcwd(),
 --     autostart=true,
 -- }
---
---
+
+
 -- vim.lsp.enable("rahu")
+
+vim.lsp.config["pyrefly"] = {
+  on_attach = function(client, bufnr)
+    -- Setup LSP folding
+    setup_lsp_folding(client, bufnr)
+
+    -- Format on save
+    if client.server_capabilities.documentFormattingProvider then
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        buffer = bufnr,
+        callback = function()
+          vim.lsp.buf.format({
+            bufnr = bufnr,
+            async = false,
+          })
+        end,
+      })
+    end
+  end,
+}
+
+vim.lsp.config["rust_analyzer"] = {
+  settings = {
+    ["rust-analyzer"] = {
+      checkOnSave = {
+        command = "clippy",
+      },
+    },
+  },
+  on_attach = function(client, bufnr)
+    -- Setup LSP folding
+    setup_lsp_folding(client, bufnr)
+
+    -- Format on save
+    if client.server_capabilities.documentFormattingProvider then
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        buffer = bufnr,
+        callback = function()
+          vim.lsp.buf.format({
+            bufnr = bufnr,
+            async = false,
+          })
+        end,
+      })
+    end
+  end,
+}
 
 vim.lsp.enable('pyrefly')
 vim.lsp.enable("texlab")
