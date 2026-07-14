@@ -54,6 +54,10 @@ vim.pack.add({
   'https://github.com/tpope/vim-fugitive',
   'https://github.com/kdheepak/lazygit.nvim',
 
+  -- Formatting & linting
+  'https://github.com/stevearc/conform.nvim',
+  'https://github.com/mfussenegger/nvim-lint',
+
   -- Editing utilities
   'https://github.com/tpope/vim-surround',
 
@@ -71,7 +75,7 @@ vim.pack.add({
 local aura_path = vim.fn.stdpath('data') .. '/site/pack/core/opt/aura-theme/packages/neovim'
 if vim.fn.isdirectory(aura_path) == 1 then
   vim.opt.rtp:append(aura_path)
-  vim.cmd('colorscheme aura-dark')
+  vim.cmd('colorscheme rose-pine')
 end
 
 -- Tree-sitter languages

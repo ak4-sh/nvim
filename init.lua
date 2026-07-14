@@ -360,35 +360,43 @@ vim.lsp.config["gopls"] = {
 }
 
 
--- vim.lsp.config["rahu"] = {
---     cmd = {"/Users/akash/Developer/rahu/bin/rahu-lsp"},
+-- vim.lsp.config["pyrefly"] = {
+--     cmd = {"/Users/akash/Developer/pyrefly/target/debug/pyrefly"},
 --     filetypes = { "python" },
---     root_dir = vim.fn.getcwd(),
 --     autostart=true,
 -- }
 
+vim.lsp.config("pyrefly", {
+
+    cmd = { "/Users/akash/Developer/pyrefly/target/debug/pyrefly", "lsp" },
+
+    filetypes = { "python" },
+
+    root_markers = { "pyproject.toml", ".git" },
+
+})
 
 -- vim.lsp.enable("rahu")
 
-vim.lsp.config["pyrefly"] = {
-  on_attach = function(client, bufnr)
-    -- Setup LSP folding
-    setup_lsp_folding(client, bufnr)
-
-    -- Format on save
-    if client.server_capabilities.documentFormattingProvider then
-      vim.api.nvim_create_autocmd("BufWritePre", {
-        buffer = bufnr,
-        callback = function()
-          vim.lsp.buf.format({
-            bufnr = bufnr,
-            async = false,
-          })
-        end,
-      })
-    end
-  end,
-}
+-- vim.lsp.config["pyrefly"] = {
+--   on_attach = function(client, bufnr)
+--     -- Setup LSP folding
+--     setup_lsp_folding(client, bufnr)
+--
+--     -- Format on save
+--     if client.server_capabilities.documentFormattingProvider then
+--       vim.api.nvim_create_autocmd("BufWritePre", {
+--         buffer = bufnr,
+--         callback = function()
+--           vim.lsp.buf.format({
+--             bufnr = bufnr,
+--             async = false,
+--           })
+--         end,
+--       })
+--     end
+--   end,
+-- }
 
 vim.lsp.config["rust_analyzer"] = {
   settings = {
