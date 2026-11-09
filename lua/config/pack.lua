@@ -28,7 +28,6 @@ vim.pack.add({
 
   -- Completion
   'https://github.com/saghen/blink.cmp',
-  'https://github.com/hrsh7th/nvim-cmp',
 
   -- Lua development
   'https://github.com/folke/lazydev.nvim',
@@ -54,9 +53,8 @@ vim.pack.add({
   'https://github.com/tpope/vim-fugitive',
   'https://github.com/kdheepak/lazygit.nvim',
 
-  -- Formatting & linting
+  -- Formatting
   'https://github.com/stevearc/conform.nvim',
-  'https://github.com/mfussenegger/nvim-lint',
 
   -- Editing utilities
   'https://github.com/tpope/vim-surround',
@@ -81,8 +79,23 @@ end
 -- Tree-sitter languages
 require('nvim-treesitter').install {
   'rust', 'javascript', 'zig', 'python', 'java', 'c', 'cpp', 'bash', 'zsh',
-  'markdown', 'yaml', 'latex', 'go', 'lua', 'typescript', 'tsx'
+  'markdown', 'yaml', 'latex', 'go', 'lua', 'typescript', 'tsx', 'css',
+  'html', 'json', 'jsdoc'
 }
+
+vim.api.nvim_create_autocmd('FileType', {
+  pattern = {
+    'javascript', 'javascriptreact', 'typescript', 'typescriptreact',
+    'css', 'html', 'json', 'jsonc',
+  },
+  callback = function(args)
+    vim.treesitter.start(args.buf)
+    vim.bo[args.buf].tabstop = 2
+    vim.bo[args.buf].softtabstop = 2
+    vim.bo[args.buf].shiftwidth = 2
+    vim.bo[args.buf].expandtab = true
+  end,
+})
 
 -- Mini.nvim suite
 require('mini.pairs').setup()
@@ -91,8 +104,6 @@ require('mini.hipatterns').setup()
 require('mini.cursorword').setup()
 require('mini.git').setup()
 require('mini.diff').setup()
-require('mini.snippets').setup()
-require('mini.completion').setup()
 require('mini.indentscope').setup()
 
 -- Auto-build blink.cmp if needed (only if directory exists and lib not built)
@@ -119,7 +130,14 @@ require('blink.cmp').setup({
   },
   completion = { documentation = { auto_show = false } },
   sources = {
-    default = { 'lsp', 'path', 'snippets', 'buffer' },
+    default = { 'lazydev', 'lsp', 'path', 'snippets', 'buffer' },
+    providers = {
+      lazydev = {
+        name = 'LazyDev',
+        module = 'lazydev.integrations.blink',
+        score_offset = 100,
+      },
+    },
   },
   fuzzy = { implementation = 'prefer_rust_with_warning' }
 })
@@ -131,14 +149,27 @@ require('lazydev').setup({
   },
 })
 
--- nvim-cmp source for lazydev
-local cmp = require('cmp')
-local cmp_sources = cmp.get_config().sources or {}
-table.insert(cmp_sources, {
-  name = 'lazydev',
-  group_index = 0,
+require('conform').setup({
+  formatters_by_ft = {
+    javascript = { 'biome' },
+    javascriptreact = { 'biome' },
+    typescript = { 'biome' },
+    typescriptreact = { 'biome' },
+    css = { 'biome' },
+    html = { 'biome' },
+    json = { 'biome' },
+    jsonc = { 'biome' },
+  },
+  format_on_save = function(bufnr)
+    if not vim.tbl_contains({
+      'javascript', 'javascriptreact', 'typescript', 'typescriptreact',
+      'css', 'html', 'json', 'jsonc',
+    }, vim.bo[bufnr].filetype) then
+      return
+    end
+    return { timeout_ms = 1000, lsp_format = 'never' }
+  end,
 })
-cmp.setup({ sources = cmp_sources })
 
 -- Status line
 require('lualine').setup({})
@@ -149,7 +180,6 @@ require('noice').setup({
     override = {
       ['vim.lsp.util.convert_input_to_markdown_lines'] = true,
       ['vim.lsp.util.stylize_markdown'] = true,
-      ['cmp.entry.get_documentation'] = true,
     },
   },
   presets = {

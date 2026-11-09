@@ -2,6 +2,11 @@
 _G.fn = require("utils.fn")
 vim.g.mapleader = " "
 
+-- Render ANSI escape sequences from the current buffer in a scratch viewer.
+vim.api.nvim_create_user_command("Colorize", function()
+  require("utils.colorize").colorize()
+end, { desc = "View current buffer with ANSI colors" })
+
 -- Line numbers
 vim.opt.number = true
 vim.opt.relativenumber = true
@@ -366,37 +371,37 @@ vim.lsp.config["gopls"] = {
 --     autostart=true,
 -- }
 
-vim.lsp.config("pyrefly", {
-
-    cmd = { "/Users/akash/Developer/pyrefly/target/debug/pyrefly", "lsp" },
-
-    filetypes = { "python" },
-
-    root_markers = { "pyproject.toml", ".git" },
-
-})
+-- vim.lsp.config("pyrefly", {
+--
+--     cmd = { "/Users/akash/Developer/pyrefly/target/debug/pyrefly", "lsp" },
+--
+--     filetypes = { "python" },
+--
+--     root_markers = { "pyproject.toml", ".git" },
+--
+-- })
 
 -- vim.lsp.enable("rahu")
 
--- vim.lsp.config["pyrefly"] = {
---   on_attach = function(client, bufnr)
---     -- Setup LSP folding
---     setup_lsp_folding(client, bufnr)
---
---     -- Format on save
---     if client.server_capabilities.documentFormattingProvider then
---       vim.api.nvim_create_autocmd("BufWritePre", {
---         buffer = bufnr,
---         callback = function()
---           vim.lsp.buf.format({
---             bufnr = bufnr,
---             async = false,
---           })
---         end,
---       })
---     end
---   end,
--- }
+vim.lsp.config["pyrefly"] = {
+  on_attach = function(client, bufnr)
+    -- Setup LSP folding
+    setup_lsp_folding(client, bufnr)
+
+    -- Format on save
+    if client.server_capabilities.documentFormattingProvider then
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        buffer = bufnr,
+        callback = function()
+          vim.lsp.buf.format({
+            bufnr = bufnr,
+            async = false,
+          })
+        end,
+      })
+    end
+  end,
+}
 
 vim.lsp.config["rust_analyzer"] = {
   settings = {
@@ -425,6 +430,37 @@ vim.lsp.config["rust_analyzer"] = {
   end,
 }
 
+vim.lsp.config('jsonls', {
+  root_markers = { 'package.json', 'bun.lock', 'bun.lockb', '.git' },
+})
+
+vim.lsp.config("clangd", {
+  on_attach = function(client, bufnr)
+    setup_lsp_folding(client, bufnr)
+
+    if client.server_capabilities.documentFormattingProvider then
+      local group = vim.api.nvim_create_augroup(
+        "ClangdFormatOnSave" .. bufnr,
+        { clear = true }
+      )
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        group = group,
+        buffer = bufnr,
+        callback = function()
+          vim.lsp.buf.format({
+            bufnr = bufnr,
+            async = false,
+            timeout_ms = 2000,
+            filter = function(format_client)
+              return format_client.id == client.id
+            end,
+          })
+        end,
+      })
+    end
+  end,
+})
+
 vim.lsp.enable('pyrefly')
 vim.lsp.enable("texlab")
 vim.lsp.enable('marksman')
@@ -432,9 +468,14 @@ vim.lsp.enable('marksman')
 vim.lsp.enable('lua_ls')
 vim.lsp.enable('gopls')
 vim.lsp.enable('vtsls')
+vim.lsp.enable('html')
+vim.lsp.enable('cssls')
+vim.lsp.enable('jsonls')
+vim.lsp.enable('biome')
 vim.lsp.enable('gleam')
 vim.lsp.enable('ocamllsp')
 vim.lsp.enable("clangd")
+vim.lsp.enable("asm_lsp")
 vim.lsp.enable('zls')
 vim.lsp.enable('rust_analyzer')
 
@@ -472,4 +513,3 @@ vim.api.nvim_create_autocmd('LspNotify', {
     end
   end,
 })
-
